@@ -231,8 +231,12 @@ var etDataAdapter = (function () {
 
         if (totes == 0) {
             console.log("INFO: No errors detected");
+            document.getElementById("format_errors_container").style.display = 'none';
             merge = process_aligned_rows(merge);
         } else {
+            document.getElementById("format_errors_container").style.display = 'block';
+            document.getElementById("format_errors").innerText = totes;
+
             console.log("INFO: tab1 " + t1e + " Errors");
             console.log("INFO: tab2 " + t2e + " Errors");
             console.log("INFO: tab3 " + t3e + " Errors");
