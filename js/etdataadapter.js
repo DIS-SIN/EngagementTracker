@@ -33,6 +33,9 @@ var etDataAdapter = (function () {
             { "id": "e_ip", "metric": "In-person: 0k", "reach": 0 / 25000 * 100, "full": 100 }, //
             { "id": "e_vr", "metric": "Virtual: 0k", "reach": 0 / 25000 * 100, "full": 100 }, //
             { "id": "e_go", "metric": "Goal: 25k", "reach": 0 / 25000 * 100, "full": 100 }
+        ],
+        get_chart_timeline_data: [
+            //{ "date": "M/d/yyyy", "reach": 0 },
         ]
     };
 
@@ -217,6 +220,169 @@ var etDataAdapter = (function () {
         replace_data_shell(merge, "get_chart_channels_thermo_data", "c_te", "[bold]Total\nEngagement[\]");
         replace_data_shell(merge, "get_chart_channels_thermo_data", "c_to", "[bold]Total\nOutreach[\]");
 
+        //add timeline data
+        var scrub_timeline = function (timeline) {
+            var clean_timeline = [];
+            //console.log(timeline);
+            var clean = true;
+            var rgx = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+            for (var i = 0; i < timeline.length; i++) {
+                clean = true;
+                //console.log(timeline[i].reach);
+                let date = timeline[i]["date"];
+                let reach = timeline[i]["reach"];
+
+                if (isNaN(reach) ||
+                    rgx.test(date) == false ||
+                    date == "1/0/1900" ||
+                    reach == 0
+                ) {
+                    clean = false;
+                }
+
+                if (clean == true) {
+                    clean_timeline.push(timeline[i]);
+                }
+            }
+
+            // sort
+            clean_timeline.sort(function (a, b) {
+                var dateA = new Date(a.date), dateB = new Date(b.date);
+                return dateA - dateB;
+            });
+            // accumulate
+            var accum_reach = 0;
+            for (var i = 0; i < clean_timeline.length; i++) {
+                accum_reach += clean_timeline[i].reach;
+                clean_timeline[i].reach = accum_reach;
+            }
+            console.log(JSON.stringify(clean_timeline, null, 4));
+            return clean_timeline;
+        };
+        merge.get_chart_timeline_data = scrub_timeline([{ "date": "6/20/2019", "reach": 60 },
+        { "date": "6/20/2019", "reach": 25 },
+        { "date": "7/16/2019", "reach": 100 },
+        { "date": "9/12/2019", "reach": 351 },
+        { "date": "9/17/2019", "reach": 70 },
+        { "date": "9/18/2019", "reach": 120 },
+        { "date": "9/23/2019", "reach": 298 },
+        { "date": "9/24/2019", "reach": 30 },
+        { "date": "9/27/2019", "reach": 239 },
+        { "date": "Sept 19, 26, Oct 3", "reach": 40 },
+        { "date": "10/2/2019", "reach": 200 },
+        { "date": "10/3/2019", "reach": 33 },
+        { "date": "10/3/2019", "reach": 100 },
+        { "date": "10/16/2019", "reach": 33 },
+        { "date": "10/17/2019", "reach": 60 },
+        { "date": "10/23/2019", "reach": 100 },
+        { "date": "10/24/2019", "reach": 23 },
+        { "date": "10/25/2019", "reach": 155 },
+        { "date": "10/28/2019", "reach": 100 },
+        { "date": "11/6/2019", "reach": 50 },
+        { "date": "11/6/2019", "reach": 50 },
+        { "date": "11/7/2019", "reach": 140 },
+        { "date": "11/12/2019", "reach": 39 },
+        { "date": "11/15/2019", "reach": 17 },
+        { "date": "11/18/2019", "reach": 200 },
+        { "date": "11/19/2019", "reach": 6 },
+        { "date": "11/20/2019", "reach": 5 },
+        { "date": "11/21/2019", "reach": 80 },
+        { "date": "11/22/2019", "reach": 70 },
+        { "date": "11/26/2019", "reach": 60 },
+        { "date": "11/27/2019", "reach": 18 },
+        { "date": "November 28., 2019", "reach": 40 },
+        { "date": "11/28/2019", "reach": 200 },
+        { "date": "12/3/2019", "reach": 200 },
+        { "date": "12/4/2019", "reach": 25 },
+        { "date": "12/12/2019", "reach": 500 },
+        { "date": "12/13/2019", "reach": 14 },
+        { "date": "12/19/2019", "reach": 28 },
+        { "date": "1/9/2020", "reach": 35 },
+        { "date": "1/16/2020", "reach": 70 },
+        { "date": "1/23/2020", "reach": 20 },
+        { "date": "1/28/2020", "reach": 72 },
+        { "date": "1/30/2020", "reach": 29 },
+        { "date": "1/31/2020", "reach": 31 },
+        { "date": "2/3/2020", "reach": 40 },
+        { "date": "Februrary 5, 2020", "reach": 13 },
+        { "date": "2/10/2020", "reach": 80 },
+        { "date": "2/13/2020", "reach": 5 },
+        { "date": "2/14/2020", "reach": 16 },
+        { "date": "2/18/2020", "reach": 30 },
+        { "date": "2/18/2020", "reach": 25 },
+        { "date": "2/19/2020", "reach": 17 },
+        { "date": "2/19/2020", "reach": 320 },
+        { "date": "2/19/2020", "reach": 28 },
+        { "date": "2/19/2020", "reach": 0 },
+        { "date": "2/20/2020", "reach": 41 },
+        { "date": "2/20/2020", "reach": 130 },
+        { "date": "2/21/2020", "reach": 45 },
+        { "date": "2/24/2020", "reach": 70 },
+        { "date": "2/24/2020", "reach": 0 },
+        { "date": "2/26/2020", "reach": 0 },
+        { "date": "2/27/2020", "reach": 0 },
+        { "date": "2/28/2020", "reach": 0 },
+        { "date": "3/4/2020", "reach": 0 },
+        { "date": "3/9/2020", "reach": 0 },
+        { "date": "3/9/2020", "reach": 0 },
+        { "date": "March 10-11, 2020", "reach": 0 },
+        { "date": "3/12/2020", "reach": 0 },
+        { "date": "3/20/2020", "reach": 0 },
+        { "date": "3/30/2020", "reach": 0 },
+        { "date": "4/16/2020", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "6/17/2020", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "TBC", "reach": 0 },
+        { "date": "TBC", "reach": 0 },
+        { "date": "TBC", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "TBC", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "Toal outreach since June 2019", "reach": 4996 },
+        { "date": "3/26/2019", "reach": 340 },
+        { "date": "4/9/2019", "reach": 560 },
+        { "date": "5/9/2019", "reach": 350 },
+        { "date": "5/27/2019", "reach": 850 },
+        { "date": "6/18/2019", "reach": 140 },
+        { "date": "6/25/2019", "reach": 900 },
+        { "date": "11/14/2019", "reach": 982 },
+        { "date": "11/26/2019", "reach": 30 },
+        { "date": "11/26/2019", "reach": 1600 },
+        { "date": "12/3/2019", "reach": 58 },
+        { "date": "12/9/2019", "reach": 18 },
+        { "date": "12/10/2019", "reach": 37 },
+        { "date": "12/16/2019", "reach": 8 },
+        { "date": "1/7/2020", "reach": 100 },
+        { "date": "1/20/2020", "reach": 5295 },
+        { "date": "1/22/2020", "reach": 950 },
+        { "date": "2/3/2020", "reach": 588 },
+        { "date": "2/3/2020", "reach": 37 },
+        { "date": "2/4/2020", "reach": 19 },
+        { "date": "2/4/2020", "reach": 190 },
+        { "date": "2/5/2020", "reach": 96 },
+        { "date": "2/7/2020", "reach": 25 },
+        { "date": "2/13/2020", "reach": 11 },
+        { "date": "2/14/2020", "reach": 0 },
+        { "date": "2/19/2020", "reach": 1170 },
+        { "date": "2/21/2020", "reach": 44 },
+        { "date": "3/27/2020", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/7/2020", "reach": 35 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 0 },
+        { "date": "1/0/1900", "reach": 14403 }
+
+        ]);
 
         return merge;
     };
