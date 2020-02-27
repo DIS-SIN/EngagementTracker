@@ -246,7 +246,7 @@ var etDataAdapter = (function () {
 
     var format = function () {
         console.log("INFO: Format data object...");
-        return JSON.stringify(get_raw_data());
+        return "var global_tracker_data = " + JSON.stringify(get_raw_data(), null, 4) + ";\n";
     };
 
     var get_raw_data = function () {
