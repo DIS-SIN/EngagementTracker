@@ -315,8 +315,8 @@ var etDashboard = (function () {
     }
 })();
 
-console.log(etDashboard.anomalies());
-console.log(etDashboard.average());
+//console.log(etDashboard.anomalies());
+//console.log(etDashboard.average());
 
 // bind format button
 document.addEventListener('click', function (event) {

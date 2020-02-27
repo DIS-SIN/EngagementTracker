@@ -121,30 +121,32 @@ var etDataAdapter = (function () {
     var check_col_row_alignment = function (tab) {
         //console.log("tab1");
         var col_count = 0;
+        var errors = 0;
         for (row in tab) {
             if (col_count == 0) {
                 col_count = tab[row].length;
             }
             if (col_count != tab[row].length) {
-                console.log("warn: row " + row + " col check fail");
+                console.log("WARN: row " + row + " col check fail");
+                console.log(tab[row]);
             }
         }
+        return errors;
     };
     var convert_format_sheetpaste_to_chartjson = function (merge) {
         //merge = adapter_data_shell;
         Object.assign(merge, adapter_data_shell);
 
         //tab1
-        console.log("tab1");
-        check_col_row_alignment(merge.tab1);
+        var t1e = check_col_row_alignment(merge.tab1);
+        var t2e = check_col_row_alignment(merge.tab2);
+        var t3e = check_col_row_alignment(merge.tab3);
+        var totes = t1e + t2e + t3e;
+        console.log("INFO: tab1 " + t1e + " Errors");
+        console.log("INFO: tab2 " + t2e + " Errors");
+        console.log("INFO: tab3 " + t3e + " Errors");
+        console.log("INFO: Total " + totes + " Errors");
 
-        //tab2
-        console.log("tab2");
-        check_col_row_alignment(merge.tab2);
-        //tab3
-
-        console.log("tab3");
-        check_col_row_alignment(merge.tab3);
 
         return merge;
     };
