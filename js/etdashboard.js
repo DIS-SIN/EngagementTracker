@@ -19,17 +19,21 @@ var etDashboard = (function () {
         return 'There are ' + anomalyItems.length + ' anomalies.';
     };
 
+    // from: etdataadapter.js
+    var chart_data = etDataAdapter.get_data()
+
     // Explicitly reveal public pointers to the private functions 
     // that we want to reveal publicly
 
     var get_chart_events_participation_data = function () {
-        return [{
+        return chart_data.get_chart_events_participation_data;
+        /*[{
             "delivery": "In-Person",
             "reach": 1838
         }, {
             "delivery": "Virtual",
             "reach": 12565
-        }];
+        }];*/
     }
     var build_chart_events_participation = function () {
         // Themes begin
@@ -76,12 +80,13 @@ var etDashboard = (function () {
     };
 
     var get_chart_engagements_participation_data = function () {
-        return [
+        return chart_data.get_chart_engagements_participation_data;
+        /*[
             { "delivery": "Workshop", "reach": 460 },
             { "delivery": "Speaker", "reach": 1125 },
             { "delivery": "Kiosk", "reach": 800 },
             { "delivery": "Presentation", "reach": 1298 },
-        ];
+        ];*/
     }
     var build_chart_engagements_participation = function () {
         // Themes begin
@@ -128,7 +133,8 @@ var etDashboard = (function () {
     };
 
     var get_chart_channels_thermo_data = function () {
-        return [{
+        return chart_data.get_chart_channels_thermo_data;
+        /*[{
             "metric": "In-Person",
             "reach": 1800
         }, {
@@ -153,7 +159,7 @@ var etDashboard = (function () {
             "metric": "[bold]Total\nOutreach[\]",
             "reach": 65000
         }
-        ];
+        ];*/
     }
     var build_chart_channels_thermo = function () {
 
@@ -216,7 +222,8 @@ var etDashboard = (function () {
     };
 
     var get_chart_engagement_thermo_data = function () {
-        return [{
+        return chart_data.get_chart_engagement_thermo_data;
+        /*[{
             "category": "In-Person: 1.5k",
             "value": 1500 / 25000 * 100,
             "full": 100
@@ -228,7 +235,7 @@ var etDashboard = (function () {
             "category": "Goal: 25k",
             "value": 15500 / 25000 * 100,
             "full": 100
-        }];
+        }];*/
     };
     var build_chart_engagement_thermo = function () {
         // Themes begin
