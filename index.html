@@ -9,59 +9,84 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        .bg-purp-canada-ca {
+            background-color: #3f2a56;
+        }
 
+        #chart_events_participation {
+            width: 100%;
+            height: 15em;
+        }
+
+        #chart_engagements_participation {
+            width: 100%;
+            height: 15em;
+        }
+    </style>
     <title>IPSB Engagement Tracker</title>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <h1>IPSB Engagement Tracker</h1>
-        <p>
-            Tracking engagement activities (kiosks, workshops, speaking engagements) and events by the CSPS
-            Digital Academy and unique views/listens from Busrides and Innovate on Demand.
-        </p>
-        <p>Last updated on Month DD, YYYY</p>
+    <div class="container-fluid bg-purp-canada-ca text-white">
+        <div class="row">
+            <div class="col-lg-10 p-1">
+                <h1 class="display-4">IPSB Engagement Tracker</h1>
+                <p class="lead">
+                    Tracking engagement activities (kiosks, workshops, speaking engagements) and events by the CSPS
+                    Digital Academy and unique views/listens from Busrides and Innovate on Demand.
+                </p>
+            </div>
+            <div class="col-lg p-3">
+                <p class="btn btn-primary">
+                    Last updated <span class="badge badge-light">Month DD, YYYY</span>
+                </p>
+            </div>
+        </div>
+
     </div>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md">
-                <h2>Total Outreach</h2>
-                <div>64.3K</div>
+        <div class="row bg-dark text-white">
+            <div class="col-md p-2">
+                <p class="h6">Total Outreach</p>
+                <p class="h4">64.3K</p>
             </div>
-            <div class="col-md">
-                <h2>Events</h2>
-                <div>13,189</div>
+            <div class="col-md p-2">
+                <p class="h6">Events</p>
+                <p class="h4">13,189</p>
             </div>
-            <div class="col-md">
-                <h2>Engagements</h2>
-                <div>4,189</div>
+            <div class="col-md p-2">
+                <p class="h6">Engagements</p>
+                <p class="h4">4,189</p>
             </div>
-            <div class="col-md">
-                <h2>Busrides.ca</h2>
-                <div>21,754</div>
+            <div class="col-md p-2">
+                <p class="h6">Busrides.ca</p>
+                <p class="h4">21,754</p>
             </div>
-            <div class="col-md">
-                <h2>Innovate on Demand</h2>
-                <div>25,170</div>
+            <div class="col-md p-2">
+                <p class="h6">Innovate on Demand</p>
+                <p class="h4">25,170</p>
             </div>
         </div>
         <div class="row">
-            <div class="col-md">
-                <h2>Events Participation</h2>
-                <img src="scaffolding/stub_chart_events_participation.png" style="width: 10em; height: 10em;" />
-                <h2>Engagement Activities</h2>
-                <img src="scaffolding/stub_chart_engagements_participation.png" style="width: 10em; height: 10em;" />
+            <div class="col-lg-4 p-2">
+                <p class="h5">Events Participation</p>
+                <div id="chart_events_participation" class="p-3"></div>
+                <p class="h5">Engagement Activities</p>
+                <div id="chart_engagements_participation" class="p-3"></div>
             </div>
-            <div class="col-md">
+            <div class="col-lg p-2">
+                <p class="h5">Engagement Summary</p>
                 <img src="scaffolding/stub_chart_engagement_thermo.png" style="width: 10em; height: 25em;" />
             </div>
-            <div class="col-md">
-                <h2>Busrides</h2>
+            <div class="col-lg p-2">
+                <p class="h5">Busrides</p>
                 <img src="scaffolding/stub_chart_busrides.png" style="width: 10em; height: 10em;" />
-                <h2>Innovate on Demand</h2>
+                <p class="h5">Innovate on Demand</p>
                 <img src="scaffolding/stub_chart_innovateondemand.png" style="width: 10em; height: 10em;" />
             </div>
-            <div class="col-md">
+            <div class="col-lg p-2">
+                <p class="h5">Channel Summary</p>
                 <img src="scaffolding/stub_chart_channels_thermo.png" style="width: 10em; height: 25em;" />
             </div>
         </div>
@@ -78,6 +103,14 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
+    <!-- amCharts -->
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <!-- Resources -->
+    <!-- <script src="https://www.amcharts.com/lib/4/themes/material.js"></script> -->
+    <script src="https://www.amcharts.com/lib/4/themes/frozen.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
     <!-- Engagement Tracker Dashboard Script-->
     <script src="js/etdashboard.js"></script>
 </body>
