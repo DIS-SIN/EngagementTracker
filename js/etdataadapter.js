@@ -36,6 +36,11 @@ var etDataAdapter = (function () {
         ]
     };
 
+    var convert_format_apijson_to_chartjson = function (merge) {
+        // stub for api return
+        return merge;
+    };
+
     var split_raw_cell_data = function (tab_name) {
         var tab = document.getElementById(tab_name).value;
         tab = tab.split("\n");
@@ -43,10 +48,6 @@ var etDataAdapter = (function () {
             tab[row] = tab[row].split("\t");
         }
         return tab;
-    };
-    var convert_format_apijson_to_chartjson = function (merge) {
-        // stub for api return
-        return merge;
     };
 
     var check_col_row_alignment = function (tab) {
@@ -65,6 +66,7 @@ var etDataAdapter = (function () {
         }
         return errors;
     };
+
     var process_aligned_rows = function (merge) {
         var tab1 = merge.tab1;
         var tab2 = merge.tab2;
@@ -89,7 +91,8 @@ var etDataAdapter = (function () {
         };
 
         // set update time
-        merge.stats_last_updated = "March, 1, 2020";
+        let now = new Date();
+        merge.stats_last_updated = (now.toISOString().split("T"))[0];
 
         // map tab 1 data
         //[0 Metric 1 Value]
@@ -175,7 +178,7 @@ var etDataAdapter = (function () {
         accumulator["[bold]Total\nChannel[\]"] = n_format(merge.stats_busrides) + n_format(merge.stats_iod);
         accumulator["[bold]Total\nEngagement[\]"] = n_format(merge.stats_engagements);
         accumulator["[bold]Total\nOutreach[\]"] = n_format(merge.stats_total_outreach);
-        console.log(merge.stats_total_outreach);
+        //console.log(merge.stats_total_outreach);
 
         for (let row = 0; row < tab3.length; row++) {
             //get_chart_engagements_participation_data
@@ -191,7 +194,7 @@ var etDataAdapter = (function () {
                 accumulator["Total"] += val3;
             }
         }
-        console.log(accumulator);
+        //console.log(accumulator);
         //{ "id": "e_ip", "metric": "In-person", "reach": 0 },
         replace_data_shell(merge, "get_chart_events_participation_data", "e_ip", "In-person");
         replace_data_shell(merge, "get_chart_channels_thermo_data", "c_ip", "In-person");
@@ -214,6 +217,7 @@ var etDataAdapter = (function () {
 
         return merge;
     };
+
     var convert_format_sheetpaste_to_chartjson = function (merge) {
         //merge = adapter_data_shell;
         Object.assign(merge, adapter_data_shell);
@@ -223,18 +227,30 @@ var etDataAdapter = (function () {
         var t2e = check_col_row_alignment(merge.tab2);
         var t3e = check_col_row_alignment(merge.tab3);
         var totes = t1e + t2e + t3e;
-        console.log("INFO: tab1 " + t1e + " Errors");
-        console.log("INFO: tab2 " + t2e + " Errors");
-        console.log("INFO: tab3 " + t3e + " Errors");
-        console.log("INFO: Total " + totes + " Errors");
+
 
         if (totes == 0) {
+            console.log("INFO: No errors detected");
             merge = process_aligned_rows(merge);
+        } else {
+            console.log("INFO: tab1 " + t1e + " Errors");
+            console.log("INFO: tab2 " + t2e + " Errors");
+            console.log("INFO: tab3 " + t3e + " Errors");
+            console.log("INFO: Total " + totes + " Errors");
         }
 
         return merge;
     };
+
+    // public functions    
+
+    var format = function () {
+        console.log("INFO: Format data object...");
+        return JSON.stringify(get_raw_data());
+    };
+
     var get_raw_data = function () {
+        console.log("INFO: Get raw data object...");
         var merge = {
             tab1: split_raw_cell_data("summaryTabData"),
             tab2: split_raw_cell_data("engagementsTabData"),
@@ -251,16 +267,15 @@ var etDataAdapter = (function () {
         return merge;
     };
 
-    var format = function () {
-        return JSON.stringify(get_raw_data());
-    };
-
     var get_data = function () {
+        // from data/data.js
+        console.log("INFO: Get data object...");
         return global_tracker_data;
     };
 
     return {
         get_data: get_data,
+        get_raw_data: get_raw_data,
         format: format
     }
 })();

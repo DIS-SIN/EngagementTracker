@@ -3,9 +3,15 @@ var etDashboard = (function () {
     // from: etdataadapter.js
     var chart_data = etDataAdapter.get_data()
 
+    var update_data = function (newdata) {
+        console.log("INFO: Update data object...");
+        chart_data = newdata;
+    };
+
     var k_format = function (val) {
         return (parseInt(val.split(",").join(""), 10) / 1000).toFixed(1) + "K";
     };
+
     var build_summary_header = function () {
         document.getElementById("stats_last_updated").innerText = chart_data.stats_last_updated;
         document.getElementById("stats_total_outreach").innerText = k_format(chart_data.stats_total_outreach)
@@ -15,19 +21,18 @@ var etDashboard = (function () {
         document.getElementById("stats_iod").innerText = k_format(chart_data.stats_iod);
     };
 
-    // Explicitly reveal public pointers to the private functions 
-    // that we want to reveal publicly
-
+    /*[{
+    "metric": "In-Person",
+    "reach": 1838
+    }, {
+    "metric": "Virtual",
+    "reach": 12565
+    }];*/
     var get_chart_events_participation_data = function () {
         return chart_data.get_chart_events_participation_data;
-        /*[{
-            "metric": "In-Person",
-            "reach": 1838
-        }, {
-            "metric": "Virtual",
-            "reach": 12565
-        }];*/
     };
+    var g_chart_events_participation = null;
+    var g_chart_events_participation_label = null;
     var build_chart_events_participation = function () {
         // Themes begin
         am4core.useTheme(am4themes_frozen);
@@ -36,7 +41,7 @@ var etDashboard = (function () {
 
         // Create chart instance
         var chart = am4core.create("chart_events_participation", am4charts.PieChart);
-
+        g_chart_events_participation = chart;
         // Add data
         chart.data = get_chart_events_participation_data();
 
@@ -60,6 +65,7 @@ var etDashboard = (function () {
         pieSeries.hiddenState.properties.startAngle = -90;
 
         var label = chart.seriesContainer.createChild(am4core.Label);
+        g_chart_events_participation_label = label;
         label.textAlign = "middle";
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
@@ -72,15 +78,17 @@ var etDashboard = (function () {
         chart.legend.maxWidth = 300;
     };
 
+    /*[
+    { "metric": "Workshop", "reach": 460 },
+    { "metric": "Speaker", "reach": 1125 },
+    { "metric": "Kiosk", "reach": 800 },
+    { "metric": "Presentation", "reach": 1298 },
+    ];*/
     var get_chart_engagements_participation_data = function () {
         return chart_data.get_chart_engagements_participation_data;
-        /*[
-            { "metric": "Workshop", "reach": 460 },
-            { "metric": "Speaker", "reach": 1125 },
-            { "metric": "Kiosk", "reach": 800 },
-            { "metric": "Presentation", "reach": 1298 },
-        ];*/
     }
+    var g_chart_engagements_participation = null;
+    var g_chart_engagements_participation_label = null;
     var build_chart_engagements_participation = function () {
         // Themes begin
         am4core.useTheme(am4themes_frozen);
@@ -89,7 +97,7 @@ var etDashboard = (function () {
 
         // Create chart instance
         var chart = am4core.create("chart_engagements_participation", am4charts.PieChart);
-
+        g_chart_engagements_participation = chart;
         // Add data
         chart.data = get_chart_engagements_participation_data();
 
@@ -113,6 +121,7 @@ var etDashboard = (function () {
         pieSeries.hiddenState.properties.startAngle = -90;
 
         var label = chart.seriesContainer.createChild(am4core.Label);
+        g_chart_engagements_participation_label = label;
         label.textAlign = "middle";
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
@@ -125,44 +134,42 @@ var etDashboard = (function () {
         chart.legend.maxWidth = 300;
     };
 
+    /*[{
+        "metric": "In-Person",
+        "reach": 1800
+    }, {
+        "metric": "Virtual",
+        "reach": 14000
+    }, {
+        "metric": "Busrides",
+        "reach": 23000
+    }, {
+        "metric": "GOAL\nOutreach",
+        "reach": 25000
+    }, {
+        "metric": "IoD",
+        "reach": 35000
+    }, {
+        "metric": "[bold]Total\nChannel[\]",
+        "reach": 55000
+    }, {
+        "metric": "[bold]Total\nEngagement[\]",
+        "reach": 24000
+    }, {
+        "metric": "[bold]Total\nOutreach[\]",
+        "reach": 65000
+    }
+    ];*/
     var get_chart_channels_thermo_data = function () {
         return chart_data.get_chart_channels_thermo_data;
-        /*[{
-            "metric": "In-Person",
-            "reach": 1800
-        }, {
-            "metric": "Virtual",
-            "reach": 14000
-        }, {
-            "metric": "Busrides",
-            "reach": 23000
-        }, {
-            "metric": "GOAL\nOutreach",
-            "reach": 25000
-        }, {
-            "metric": "IoD",
-            "reach": 35000
-        }, {
-            "metric": "[bold]Total\nChannel[\]",
-            "reach": 55000
-        }, {
-            "metric": "[bold]Total\nEngagement[\]",
-            "reach": 24000
-        }, {
-            "metric": "[bold]Total\nOutreach[\]",
-            "reach": 65000
-        }
-        ];*/
     }
+    var g_chart_channels_thermo = null;
     var build_chart_channels_thermo = function () {
-
-
         // Themes begin
         am4core.useTheme(am4themes_animated);
         // Themes end
-
-
         var chart = am4core.create("chart_channels_thermo", am4charts.XYChart);
+        g_chart_channels_thermo = chart;
 
         chart.data = get_chart_channels_thermo_data();
 
@@ -202,34 +209,27 @@ var etDashboard = (function () {
             return chart.colors.getIndex(target.dataItem.index);
         });
 
-        /*setInterval(function () {
-            am4core.array.each(chart.data, function (item) {
-                item.reach += Math.round(Math.random() * 200 - 100);
-                item.reach = Math.abs(item.reach);
-            })
-            chart.invalidateRawData();
-        }, 2000)*/
-
         categoryAxis.sortBySeries = series;
 
     };
 
+    /*[{
+        "category": "In-Person: 1.5k",
+        "value": 1500 / 25000 * 100,
+        "full": 100
+    }, {
+        "category": "Virtual: 14k",
+        "value": 14000 / 25000 * 100,
+        "full": 100
+    }, {
+        "category": "Goal: 25k",
+        "value": 15500 / 25000 * 100,
+        "full": 100
+    }];*/
     var get_chart_engagement_thermo_data = function () {
         return chart_data.get_chart_engagement_thermo_data;
-        /*[{
-            "category": "In-Person: 1.5k",
-            "value": 1500 / 25000 * 100,
-            "full": 100
-        }, {
-            "category": "Virtual: 14k",
-            "value": 14000 / 25000 * 100,
-            "full": 100
-        }, {
-            "category": "Goal: 25k",
-            "value": 15500 / 25000 * 100,
-            "full": 100
-        }];*/
     };
+    var g_chart_engagement_thermo = null;
     var build_chart_engagement_thermo = function () {
         // Themes begin
         am4core.useTheme(am4themes_animated);
@@ -237,7 +237,7 @@ var etDashboard = (function () {
 
         // Create chart instance
         var chart = am4core.create("chart_engagement_thermo", am4charts.RadarChart);
-
+        g_chart_engagement_thermo = chart;
         // Add data
         chart.data = get_chart_engagement_thermo_data();
 
@@ -295,17 +295,48 @@ var etDashboard = (function () {
 
     };
 
-    am4core.ready(function () {
+    var init_charts = function () {
         build_summary_header();
         build_chart_events_participation();
         build_chart_engagements_participation();
         build_chart_engagement_thermo();
         build_chart_channels_thermo();
+    };
+    var refresh_charts = function () {
+        console.log("INFO: Refresh Data...");
+        build_summary_header();
+
+        // invalidate labels to redraw
+        g_chart_events_participation_label.deepInvalidate();
+        g_chart_engagements_participation_label.deepInvalidate();
+
+        //console.log(g_chart_engagement_thermo.data)
+        //console.log(get_chart_engagement_thermo_data())
+        g_chart_engagement_thermo.data = get_chart_engagement_thermo_data();
+        //console.log(g_chart_engagement_thermo.data)
+        g_chart_channels_thermo.data = get_chart_channels_thermo_data();
+        g_chart_engagements_participation.data = get_chart_engagements_participation_data();
+        g_chart_events_participation.data = get_chart_events_participation_data();
+
+        /*
+        //let pieSeries = g_chart_engagements_participation.series;
+        let label = g_chart_engagements_participation.seriesContainer.createChild(am4core.Label);
+        label.textAlign = "middle";
+        label.horizontalCenter = "middle";
+        label.verticalCenter = "middle";
+        label.adapter.add("text", function (text, target) {
+            return "[bold font-size:30px]" + (g_chart_engagements_participation.series.dataItem.values.value.sum / 1000).toFixed(1) + "S" + "[/]";
+        })*/
+    }
+
+    am4core.ready(function () {
+        init_charts();
     }); // end am4core.ready()
 
     return {
-        //average: average,
-        //anomalies: anomalies
+        init: init_charts,
+        refresh: refresh_charts,
+        update: update_data
     }
 })();
 
@@ -318,5 +349,14 @@ document.addEventListener('click', function (event) {
     if (!event.target.matches('#format_data')) return;
     // Don't follow the link
     event.preventDefault();
+
+    etDashboard.update(etDataAdapter.get_raw_data());
     document.getElementById("outputDataJSON").value = etDataAdapter.format();
+    etDashboard.refresh();
 }, false);
+
+// autorefresh
+setInterval(function () {
+    console.log("INFO: Refreshing...");
+    window.location.reload()
+}, 600000); // update every 10 mins
