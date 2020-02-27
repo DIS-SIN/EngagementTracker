@@ -117,9 +117,34 @@ var etDataAdapter = (function () {
         // stub for api return
         return merge;
     };
+
+    var check_col_row_alignment = function (tab) {
+        //console.log("tab1");
+        var col_count = 0;
+        for (row in tab) {
+            if (col_count == 0) {
+                col_count = tab[row].length;
+            }
+            if (col_count != tab[row].length) {
+                console.log("warn: row " + row + " col check fail");
+            }
+        }
+    };
     var convert_format_sheetpaste_to_chartjson = function (merge) {
         //merge = adapter_data_shell;
         Object.assign(merge, adapter_data_shell);
+
+        //tab1
+        console.log("tab1");
+        check_col_row_alignment(merge.tab1);
+
+        //tab2
+        console.log("tab2");
+        check_col_row_alignment(merge.tab2);
+        //tab3
+
+        console.log("tab3");
+        check_col_row_alignment(merge.tab3);
 
         return merge;
     };
@@ -150,4 +175,4 @@ var etDataAdapter = (function () {
     }
 })();
 
-console.log(etDataAdapter.get_data());
+//console.log(etDataAdapter.get_data());
