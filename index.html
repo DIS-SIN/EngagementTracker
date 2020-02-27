@@ -23,6 +23,20 @@
             width: 100%;
             height: 15em;
         }
+
+        #chart_engagement_thermo {
+            width: 100%;
+            height: 17em;
+        }
+
+        #chart_channels_thermo {
+            width: 100%;
+            height: 20em;
+        }
+
+        .banner-metric {
+            width: 2.5em;
+        }
     </style>
     <title>IPSB Engagement Tracker</title>
 </head>
@@ -48,46 +62,49 @@
     <div class="container-fluid">
         <div class="row bg-dark text-white">
             <div class="col-md p-2">
-                <p class="h6">Total Outreach</p>
                 <p class="h4">64.3K</p>
+                <p class="h6">Total Outreach</p>
             </div>
             <div class="col-md p-2">
-                <p class="h6">Events</p>
                 <p class="h4">13,189</p>
+                <p class="h6">Events</p>
             </div>
             <div class="col-md p-2">
-                <p class="h6">Engagements</p>
                 <p class="h4">4,189</p>
+                <p class="h6">Engagements</p>
             </div>
             <div class="col-md p-2">
-                <p class="h6">Busrides.ca</p>
+                <img src="images/busrides.png" class="img-fluid img-thumbnail banner-metric float-left m-2"
+                    alt="Busrides">
                 <p class="h4">21,754</p>
+                <p class="h6">Busrides.ca</p>
             </div>
             <div class="col-md p-2">
-                <p class="h6">Innovate on Demand</p>
+                <img src="images/innovateondemand.png" class="img-fluid img-thumbnail banner-metric float-left m-2"
+                    alt="Innovate on Demand">
                 <p class="h4">25,170</p>
+                <p class="h6">Innovate on Demand</p>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4 p-2">
                 <p class="h5">Events Participation</p>
                 <div id="chart_events_participation" class="p-3"></div>
+            </div>
+            <div class="col-lg-4 p-2">
                 <p class="h5">Engagement Activities</p>
                 <div id="chart_engagements_participation" class="p-3"></div>
             </div>
-            <div class="col-lg p-2">
-                <p class="h5">Engagement Summary</p>
-                <img src="scaffolding/stub_chart_engagement_thermo.png" style="width: 10em; height: 25em;" />
+            <div class="col-lg-4 p-2">
+                <p class="h5">Engagement Goal Progress</p>
+                <div id="chart_engagement_thermo" class="p-3"></div>
             </div>
-            <div class="col-lg p-2">
-                <p class="h5">Busrides</p>
-                <img src="scaffolding/stub_chart_busrides.png" style="width: 10em; height: 10em;" />
-                <p class="h5">Innovate on Demand</p>
-                <img src="scaffolding/stub_chart_innovateondemand.png" style="width: 10em; height: 10em;" />
-            </div>
-            <div class="col-lg p-2">
-                <p class="h5">Channel Summary</p>
-                <img src="scaffolding/stub_chart_channels_thermo.png" style="width: 10em; height: 25em;" />
+        </div>
+        <div class="row">
+            <div class="col-sm p-2">
+
+                <p class="h5">Outreach Summary</p>
+                <div id="chart_channels_thermo" class="p-3"></div>
             </div>
         </div>
     </div>
