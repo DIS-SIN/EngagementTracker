@@ -50,6 +50,7 @@ var etDataAdapter = (function () {
         return tab;
     };
 
+    var error_log = "";
     var check_col_row_alignment = function (tab) {
         //console.log("tab1");
         var col_count = 0;
@@ -59,7 +60,9 @@ var etDataAdapter = (function () {
                 col_count = tab[row].length;
             }
             if (col_count != tab[row].length) {
-                console.log("WARN: row " + row + " col check fail");
+                var err = "- WARN: row " + row + " col check fail ";
+                error_log += "\n" + err;
+                console.log(err);
                 console.log(tab[row]);
                 errors++;
             }
@@ -222,6 +225,7 @@ var etDataAdapter = (function () {
         //merge = adapter_data_shell;
         Object.assign(merge, adapter_data_shell);
 
+        error_log = "";
         //tab1
         var t1e = check_col_row_alignment(merge.tab1);
         var t2e = check_col_row_alignment(merge.tab2);
@@ -232,10 +236,13 @@ var etDataAdapter = (function () {
         if (totes == 0) {
             console.log("INFO: No errors detected");
             document.getElementById("format_errors_container").style.display = 'none';
+            error_log = "";
+            document.getElementById("format_errors_log").innerText = "";
             merge = process_aligned_rows(merge);
         } else {
             document.getElementById("format_errors_container").style.display = 'block';
             document.getElementById("format_errors").innerText = totes;
+            document.getElementById("format_errors_log").innerText = error_log;
 
             console.log("INFO: tab1 " + t1e + " Errors");
             console.log("INFO: tab2 " + t2e + " Errors");
