@@ -1,6 +1,42 @@
 var etDataAdapter = (function () {
 
     // Keep this variable private inside this closure scope
+    var adapter_data_shell = {
+        last_updated: "...",
+        key_stats: {
+            total_outreach: "...",
+            events: "...",
+            engagements: "...",
+            busrides: "...",
+            iod: "..."
+        },
+        get_chart_events_participation_data: [
+            { "id": "e_ip", "delivery": "In-Person", "reach": 0 },
+            { "id": "e_vr", "delivery": "Virtual", "reach": 0 }
+        ],
+        get_chart_engagements_participation_data: [
+            { "id": "n_dw", "delivery": "Workshop", "reach": 0 },
+            { "id": "n_ds", "delivery": "Speaker", "reach": 0 },
+            { "id": "n_dl", "delivery": "Kiosk", "reach": 0 },
+            { "id": "n_dp", "delivery": "Presentation", "reach": 0 }
+        ],
+        get_chart_channels_thermo_data: [
+            { "id": "c_ip", "metric": "In-Person", "reach": 0 },
+            { "id": "c_vr", "metric": "Virtual", "reach": 0 },
+            { "id": "c_br", "metric": "Busrides", "reach": 0 },
+            { "id": "c_go", "metric": "GOAL\nOutreach", "reach": 0 },
+            { "id": "c_id", "metric": "IoD", "reach": 0 },
+            { "id": "c_tc", "metric": "[bold]Total\nChannel[\]", "reach": 0 },
+            { "id": "c_te", "metric": "[bold]Total\nEngagement[\]", "reach": 0 },
+            { "id": "c_to", "metric": "[bold]Total\nOutreach[\]", "reach": 0 }
+        ],
+        get_chart_engagement_thermo_data: [
+            { "id": "e_ip", "category": "In-Person: 0k", "value": 0 / 25000 * 100, "full": 100 },
+            { "id": "e_vr", "category": "Virtual: 0k", "value": 0 / 25000 * 100, "full": 100 },
+            { "id": "e_go", "category": "Goal: 25k", "value": 0 / 25000 * 100, "full": 100 }
+        ]
+    };
+    /*
     var adapter_data = {
         last_updated: "July, 26, 1983",
         key_stats: {
@@ -67,23 +103,45 @@ var etDataAdapter = (function () {
                 "full": 100
             }
         ]
+    };*/
+
+    var split_raw_cell_data = function (tab_name) {
+        var tab = document.getElementById(tab_name).value;
+        tab = tab.split("\n");
+        for (row in tab) {
+            tab[row] = tab[row].split("\t");
+        }
+        return tab;
     };
+    var convert_format_apijson_to_chartjson = function (merge) {
+        // stub for api return
+        return merge;
+    };
+    var convert_format_sheetpaste_to_chartjson = function (merge) {
+        //merge = adapter_data_shell;
+        Object.assign(merge, adapter_data_shell);
 
+        return merge;
+    };
     var get_raw_data = function () {
-        var tab1 = document.getElementById("summaryTabData").value;
-        var tab2 = document.getElementById("engagementsTabData").value;
-        var tab3 = document.getElementById("eventsTabData").value;
+        var merge = {
+            tab1: split_raw_cell_data("summaryTabData"),
+            tab2: split_raw_cell_data("engagementsTabData"),
+            tab3: split_raw_cell_data("eventsTabData")
+        }
 
-        return tab1 + "\n" + tab2 + "\n" + tab3;
+        merge = convert_format_sheetpaste_to_chartjson(merge);
+
+        return merge;
     };
 
 
     var format = function () {
-        return get_raw_data();
+        return JSON.stringify(get_raw_data());
     };
 
     var get_data = function () {
-        return adapter_data;
+        return get_raw_data();
     };
 
     return {
