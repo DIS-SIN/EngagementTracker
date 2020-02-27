@@ -69,12 +69,26 @@ var etDataAdapter = (function () {
         ]
     };
 
+    var get_raw_data = function () {
+        var tab1 = document.getElementById("summaryTabData").value;
+        var tab2 = document.getElementById("engagementsTabData").value;
+        var tab3 = document.getElementById("eventsTabData").value;
+
+        return tab1 + "\n" + tab2 + "\n" + tab3;
+    };
+
+
+    var format = function () {
+        return get_raw_data();
+    };
+
     var get_data = function () {
         return adapter_data;
     };
 
     return {
-        get_data: get_data
+        get_data: get_data,
+        format: format
     }
 })();
 

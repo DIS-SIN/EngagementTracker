@@ -316,4 +316,13 @@ var etDashboard = (function () {
 })();
 
 console.log(etDashboard.anomalies());
-console.log(etDashboard.average()); 
+console.log(etDashboard.average());
+
+// bind format button
+document.addEventListener('click', function (event) {
+    // If the clicked element doesn't have the right selector, bail
+    if (!event.target.matches('#format_data')) return;
+    // Don't follow the link
+    event.preventDefault();
+    document.getElementById("outputDataJSON").value = etDataAdapter.format();
+}, false);
