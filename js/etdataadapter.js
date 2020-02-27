@@ -2,14 +2,12 @@ var etDataAdapter = (function () {
 
     // Keep this variable private inside this closure scope
     var adapter_data_shell = {
-        last_updated: "...",
-        key_stats: {
-            total_outreach: "...",
-            events: "...",
-            engagements: "...",
-            busrides: "...",
-            iod: "..."
-        },
+        stats_last_updated: "...",
+        stats_total_outreach: "...",
+        stats_events: "...",
+        stats_engagements: "...",
+        stats_busrides: "...",
+        stats_iod: "...",
         get_chart_events_participation_data: [
             { "id": "e_ip", "delivery": "In-Person", "reach": 0 },
             { "id": "e_vr", "delivery": "Virtual", "reach": 0 }
@@ -129,9 +127,57 @@ var etDataAdapter = (function () {
             if (col_count != tab[row].length) {
                 console.log("WARN: row " + row + " col check fail");
                 console.log(tab[row]);
+                errors++;
             }
         }
         return errors;
+    };
+    var process_aligned_rows = function (merge) {
+        var tab1 = merge.tab1;
+
+        // map excel cell data to our key object
+        var cell_fxn_map = {
+            "Engagement Activities": "stats_engagements",
+            "Events": "stats_events",
+            "Total1": "stats_total_engagements",
+            //"Channels": "",
+            "Busrides": "stats_busrides",
+            "Innovate on Demand": "stats_iod",
+            "Total2": "stats_total_channels",
+            //"Digital Audiences": "",
+            //"Slack": "",
+            "Newsletters": "stats_newsletters",
+            //"GCCollab": "",
+            "Twitter(EN + FR)": "stats_twitter",
+            "Total": "stats_total_digitalaudience",
+            "Total Outreach": "stats_total_outreach"
+        };
+
+        // set update time
+        merge.stats_last_updated = "March, 1, 2020";
+
+        // map tab 1 data
+        var total_counter = 0;
+        for (let row = 0; row < tab1.length; row++) {
+            var cell_id = tab1[row][0];
+            if (cell_id == "Total Outreach") {
+                merge[cell_fxn_map[cell_id]] = tab1[row + 1][1];
+                break;
+            }
+
+            if (cell_id == "Total") {
+                total_counter++;
+                cell_id += total_counter;
+            }
+
+            if (typeof cell_fxn_map[cell_id] !== "undefined") {
+                merge[cell_fxn_map[cell_id]] = tab1[row][1];
+            }
+        }
+
+
+
+        return merge;
     };
     var convert_format_sheetpaste_to_chartjson = function (merge) {
         //merge = adapter_data_shell;
@@ -147,6 +193,9 @@ var etDataAdapter = (function () {
         console.log("INFO: tab3 " + t3e + " Errors");
         console.log("INFO: Total " + totes + " Errors");
 
+        if (totes == 0) {
+            merge = process_aligned_rows(merge);
+        }
 
         return merge;
     };

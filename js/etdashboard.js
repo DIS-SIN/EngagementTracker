@@ -22,6 +22,15 @@ var etDashboard = (function () {
     // from: etdataadapter.js
     var chart_data = etDataAdapter.get_data()
 
+    var build_summary_header = function () {
+        document.getElementById("stats_last_updated").innerText = chart_data.stats_last_updated;
+        document.getElementById("stats_total_outreach").innerText = chart_data.stats_total_outreach;
+        document.getElementById("stats_events").innerText = chart_data.stats_events;
+        document.getElementById("stats_engagements").innerText = chart_data.stats_engagements;
+        document.getElementById("stats_busrides").innerText = chart_data.stats_busrides;
+        document.getElementById("stats_iod").innerText = chart_data.stats_iod;
+    };
+
     // Explicitly reveal public pointers to the private functions 
     // that we want to reveal publicly
 
@@ -303,6 +312,7 @@ var etDashboard = (function () {
     };
 
     am4core.ready(function () {
+        build_summary_header();
         build_chart_events_participation();
         build_chart_engagements_participation();
         build_chart_engagement_thermo();
