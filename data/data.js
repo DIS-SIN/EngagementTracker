@@ -1,5 +1,5 @@
 var global_tracker_data = {
-    "stats_last_updated": "March, 1, 2020",
+    "stats_last_updated": "2020-02-25",
     "stats_total_outreach": "74,481",
     "stats_events": "14403",
     "stats_engagements": "4996",
