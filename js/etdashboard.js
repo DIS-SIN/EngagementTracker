@@ -1,34 +1,18 @@
 var etDashboard = (function () {
 
-    // Keep this variable private inside this closure scope
-    var inputItems = [93, 95, 88, 0, 55, 91];
-
-    var average = function () {
-        var total = inputItems.reduce(function (accumulator, item) {
-            return accumulator + item;
-        }, 0);
-
-        return 'Average is ' + total / inputItems.length + '.';
-    };
-
-    var anomalies = function () {
-        var anomalyItems = inputItems.filter(function (item) {
-            return item < 70;
-        });
-
-        return 'There are ' + anomalyItems.length + ' anomalies.';
-    };
-
     // from: etdataadapter.js
     var chart_data = etDataAdapter.get_data()
 
+    var k_format = function (val) {
+        return (parseInt(val.split(",").join(""), 10) / 1000).toFixed(1) + "K";
+    };
     var build_summary_header = function () {
         document.getElementById("stats_last_updated").innerText = chart_data.stats_last_updated;
-        document.getElementById("stats_total_outreach").innerText = chart_data.stats_total_outreach;
-        document.getElementById("stats_events").innerText = chart_data.stats_events;
-        document.getElementById("stats_engagements").innerText = chart_data.stats_engagements;
-        document.getElementById("stats_busrides").innerText = chart_data.stats_busrides;
-        document.getElementById("stats_iod").innerText = chart_data.stats_iod;
+        document.getElementById("stats_total_outreach").innerText = k_format(chart_data.stats_total_outreach)
+        document.getElementById("stats_events").innerText = k_format(chart_data.stats_events);
+        document.getElementById("stats_engagements").innerText = k_format(chart_data.stats_engagements);
+        document.getElementById("stats_busrides").innerText = k_format(chart_data.stats_busrides);
+        document.getElementById("stats_iod").innerText = k_format(chart_data.stats_iod);
     };
 
     // Explicitly reveal public pointers to the private functions 
@@ -37,13 +21,13 @@ var etDashboard = (function () {
     var get_chart_events_participation_data = function () {
         return chart_data.get_chart_events_participation_data;
         /*[{
-            "delivery": "In-Person",
+            "metric": "In-Person",
             "reach": 1838
         }, {
-            "delivery": "Virtual",
+            "metric": "Virtual",
             "reach": 12565
         }];*/
-    }
+    };
     var build_chart_events_participation = function () {
         // Themes begin
         am4core.useTheme(am4themes_frozen);
@@ -62,7 +46,7 @@ var etDashboard = (function () {
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "reach";
-        pieSeries.dataFields.category = "delivery";
+        pieSeries.dataFields.category = "metric";
         pieSeries.slices.template.stroke = am4core.color("#4a2abb");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
@@ -80,7 +64,7 @@ var etDashboard = (function () {
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.adapter.add("text", function (text, target) {
-            return "[bold font-size:30px]" + pieSeries.dataItem.values.value.sum + "[/]";
+            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "K" + "[/]";
         })
 
         chart.legend = new am4charts.Legend();
@@ -91,10 +75,10 @@ var etDashboard = (function () {
     var get_chart_engagements_participation_data = function () {
         return chart_data.get_chart_engagements_participation_data;
         /*[
-            { "delivery": "Workshop", "reach": 460 },
-            { "delivery": "Speaker", "reach": 1125 },
-            { "delivery": "Kiosk", "reach": 800 },
-            { "delivery": "Presentation", "reach": 1298 },
+            { "metric": "Workshop", "reach": 460 },
+            { "metric": "Speaker", "reach": 1125 },
+            { "metric": "Kiosk", "reach": 800 },
+            { "metric": "Presentation", "reach": 1298 },
         ];*/
     }
     var build_chart_engagements_participation = function () {
@@ -115,7 +99,7 @@ var etDashboard = (function () {
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "reach";
-        pieSeries.dataFields.category = "delivery";
+        pieSeries.dataFields.category = "metric";
         pieSeries.slices.template.stroke = am4core.color("#4a2abb");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
@@ -133,7 +117,7 @@ var etDashboard = (function () {
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.adapter.add("text", function (text, target) {
-            return "[bold font-size:30px]" + pieSeries.dataItem.values.value.sum + "[/]";
+            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "K" + "[/]";
         })
 
         chart.legend = new am4charts.Legend();
@@ -200,7 +184,7 @@ var etDashboard = (function () {
         var series = chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.categoryX = "metric";
         series.dataFields.valueY = "reach";
-        series.tooltipText = "{valueY.value}"
+        series.tooltipText = "{valueY.reach}"
         series.columns.template.strokeOpacity = 0;
         series.columns.template.column.cornerRadiusTopRight = 10;
         series.columns.template.column.cornerRadiusTopLeft = 10;
@@ -267,7 +251,7 @@ var etDashboard = (function () {
 
         // Create axes
         var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
-        categoryAxis.dataFields.category = "category";
+        categoryAxis.dataFields.category = "metric";
         categoryAxis.renderer.grid.template.location = 0;
         categoryAxis.renderer.grid.template.strokeOpacity = 0;
         categoryAxis.renderer.labels.template.horizontalCenter = "right";
@@ -286,7 +270,7 @@ var etDashboard = (function () {
         // Create series
         var series1 = chart.series.push(new am4charts.RadarColumnSeries());
         series1.dataFields.valueX = "full";
-        series1.dataFields.categoryY = "category";
+        series1.dataFields.categoryY = "metric";
         series1.clustered = false;
         series1.columns.template.fill = new am4core.InterfaceColorSet().getFor("alternativeBackground");
         series1.columns.template.fillOpacity = 0.08;
@@ -295,11 +279,11 @@ var etDashboard = (function () {
         series1.columns.template.radarColumn.cornerRadius = 20;
 
         var series2 = chart.series.push(new am4charts.RadarColumnSeries());
-        series2.dataFields.valueX = "value";
-        series2.dataFields.categoryY = "category";
+        series2.dataFields.valueX = "reach";
+        series2.dataFields.categoryY = "metric";
         series2.clustered = false;
         series2.columns.template.strokeWidth = 0;
-        series2.columns.template.tooltipText = "{category}: [bold]{value}[/]";
+        series2.columns.template.tooltipText = "{metric}: [bold]{reach}[/]";
         series2.columns.template.radarColumn.cornerRadius = 20;
 
         series2.columns.template.adapter.add("fill", function (fill, target) {
@@ -320,8 +304,8 @@ var etDashboard = (function () {
     }); // end am4core.ready()
 
     return {
-        average: average,
-        anomalies: anomalies
+        //average: average,
+        //anomalies: anomalies
     }
 })();
 
