@@ -1,3 +1,4 @@
+// the main renderer. COnsumes a chart metrics object and uses amCharts to render
 var etDashboard = (function () {
 
     // from: etdataadapter.js
