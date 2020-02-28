@@ -380,7 +380,7 @@ var etDataAdapter = (function () {
         for (var i = start_row; i <= end_row; i++) {
             for (var j = 0; j < cols.length; j++) {
                 let v = accumulator_array.find(function (item) {
-                    return item.rc == cols[j] + i
+                    return item.rc == cols[j] + i; // So it looks like A1
                 });
                 if (typeof v === "undefined") {
                     tsv += "\t";
