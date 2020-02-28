@@ -39,12 +39,16 @@
             height: 20em;
         }
 
-        .banner-metric {
-            width: 2.5em;
+        #format_data_container {
+            display: none;
         }
 
         #format_errors_container {
             display: none;
+        }
+
+        .banner-metric {
+            width: 2.5em;
         }
 
         .display-4 {
@@ -130,7 +134,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid">
+    <div class="container-fluid" id="format_data_container">
         <div class="row bg-dark text-white p-4">
             <p class="h4">Spreadsheet2Dashboard Formatter</p>
         </div>
@@ -184,6 +188,13 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row bg-dark text-white p-4">
+            <button id="toggle_format_data" type="button" class="btn btn-light">
+                Data-Formatter
+            </button>
         </div>
     </div>
 

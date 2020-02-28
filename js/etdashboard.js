@@ -9,7 +9,7 @@ var etDashboard = (function () {
     };
 
     var k_format = function (val) {
-        return (parseInt(val.split(",").join(""), 10) / 1000).toFixed(1) + "K";
+        return (parseInt(val.split(",").join(""), 10) / 1000).toFixed(1) + "k";
     };
 
     var build_summary_header = function () {
@@ -70,7 +70,7 @@ var etDashboard = (function () {
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.adapter.add("text", function (text, target) {
-            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "K" + "[/]";
+            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "k" + "[/]";
         })
 
         chart.legend = new am4charts.Legend();
@@ -126,7 +126,7 @@ var etDashboard = (function () {
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.adapter.add("text", function (text, target) {
-            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "K" + "[/]";
+            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "k" + "[/]";
         })
 
         chart.legend = new am4charts.Legend();
@@ -171,6 +171,10 @@ var etDashboard = (function () {
         var chart = am4core.create("chart_channels_thermo", am4charts.XYChart);
         g_chart_channels_thermo = chart;
 
+
+        // Set number format
+        chart.numberFormatter.numberFormat = "#.a";
+
         chart.data = get_chart_channels_thermo_data();
 
         chart.padding(40, 40, 40, 40);
@@ -200,7 +204,7 @@ var etDashboard = (function () {
         var labelBullet = series.bullets.push(new am4charts.LabelBullet());
         labelBullet.label.verticalCenter = "bottom";
         labelBullet.label.dy = -10;
-        labelBullet.label.text = "{values.valueY.workingValue.formatNumber('#.')}";
+        labelBullet.label.text = "{values.valueY.workingValue.formatNumber('#.0a')}";
 
         chart.zoomOutButton.disabled = true;
 
@@ -316,6 +320,9 @@ var etDashboard = (function () {
 
         var chart = am4core.create("chart_timeline", am4charts.XYChart);
         g_chart_timeline = chart;
+
+        // Set number format
+        chart.numberFormatter.numberFormat = "#.a";
 
         chart.data = get_chart_timeline_data();
         chart.dateFormatter.inputDateFormat = "M/d/yyyy";
@@ -474,6 +481,18 @@ document.addEventListener('click', function (event) {
     etDashboard.update(etDataAdapter.get_raw_data());
     document.getElementById("outputDataJSON").value = etDataAdapter.format();
     etDashboard.refresh();
+}, false);
+
+document.addEventListener('click', function (event) {
+    // If the clicked element doesn't have the right selector, bail
+    if (!event.target.matches('#toggle_format_data')) return;
+    // Don't follow the link
+    event.preventDefault();
+
+    let el = document.getElementById("format_data_container");
+    el.style.display == 'block' ?
+        el.style.display = 'none' :
+        el.style.display = 'block';
 }, false);
 
 // autorefresh
