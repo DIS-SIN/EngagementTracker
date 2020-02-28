@@ -1,6 +1,8 @@
+// adapts code between tsv, json, and the chart object format
 var etDataAdapter = (function () {
 
     // Keep this variable private inside this closure scope
+    // the shell of the metrics
     var adapter_data_shell = {
         stats_last_updated: "...",
         stats_total_outreach: "...",
@@ -39,13 +41,8 @@ var etDataAdapter = (function () {
         ]
     };
 
-    var convert_format_apijson_to_chartjson = function (merge) {
-        // stub for api return
-        return merge;
-    };
-
-    var split_raw_cell_data = function (tab_name) {
-        var tab = document.getElementById(tab_name).value;
+    // split up tsv into arrays
+    var split_raw_cell_data = function (tab) {
         tab = tab.split("\n");
         for (row in tab) {
             tab[row] = tab[row].split("\t");
@@ -53,6 +50,7 @@ var etDataAdapter = (function () {
         return tab;
     };
 
+    // verify if the tsv rows have the right layout
     var error_log = "";
     var errors = 0;
     var check_col_row_alignment = function (tab) {
@@ -73,6 +71,7 @@ var etDataAdapter = (function () {
         return errors;
     };
 
+    // drop unchartable data
     var scrub_timeline = function (timeline) {
         var clean_timeline = [];
         //console.log(timeline);
@@ -113,6 +112,7 @@ var etDataAdapter = (function () {
         return clean_timeline;
     };
 
+    // main processing workhorse. Creates metrics.
     var process_aligned_rows = function (merge) {
         var tab1 = merge.tab1;
         var tab2 = merge.tab2;
@@ -305,6 +305,7 @@ var etDataAdapter = (function () {
         return merge;
     };
 
+    // translate tsv into json chart object
     var convert_format_sheetpaste_to_chartjson = function (merge) {
         //merge = adapter_data_shell;
         Object.assign(merge, adapter_data_shell);
@@ -337,19 +338,18 @@ var etDataAdapter = (function () {
         return merge;
     };
 
-    // public functions    
-
+    // format raw data object
     var format = function () {
         console.log("INFO: Format data object...");
         return "var global_tracker_data = " + JSON.stringify(get_raw_data(), null, 4) + ";\n";
     };
-
+    // get data from the textareas
     var get_raw_data = function () {
         console.log("INFO: Get raw data object...");
         var merge = {
-            tab1: split_raw_cell_data("summaryTabData"),
-            tab2: split_raw_cell_data("engagementsTabData"),
-            tab3: split_raw_cell_data("eventsTabData")
+            tab1: split_raw_cell_data(document.getElementById("summaryTabData").value),
+            tab2: split_raw_cell_data(document.getElementById("engagementsTabData").value),
+            tab3: split_raw_cell_data(document.getElementById("eventsTabData").value)
         }
 
         merge = convert_format_sheetpaste_to_chartjson(merge);
@@ -361,16 +361,89 @@ var etDataAdapter = (function () {
 
         return merge;
     };
+    // make tsv of the json to feed our adapter
+    var process_tab_to_tsv = function (tab_json, start_row, end_row, cols) {//star_col, end_col) {
+        let cells = tab_json.feed.entry;
+        let accumulator_array = [];
+        for (var i = 0; i < cells.length; i++) {
+            let cell_id = cells[i].title["$t"];
+            let cell_ct = cells[i].content["$t"];
+            accumulator_array.push({ "rc": cell_id, "val": cell_ct });
+        }
+        var tsv = ""
+        var current_row = start_row;
+        accumulator_array.sort(function (a, b) {
+            var dateA = a.rc.slice(1, 3), dateB = b.rc.slice(1, 3);
+            return dateA - dateB;
+        });
 
+        for (var i = start_row; i <= end_row; i++) {
+            for (var j = 0; j < cols.length; j++) {
+                let v = accumulator_array.find(function (item) {
+                    return item.rc == cols[j] + i
+                });
+                if (typeof v === "undefined") {
+                    tsv += "\t";
+                } else {
+                    tsv += v.val + "\t";
+                }
+            }
+            tsv += "\n";
+        }
+        tsv += "\t".repeat(cols.length);
+
+        //console.log(tsv);
+        return tsv;
+    }
+    // call api
+    var get_json = function (yourUrl) {
+        var Httpreq = new XMLHttpRequest(); // a new request
+        Httpreq.open("GET", yourUrl, false);
+        Httpreq.send(null);
+        return Httpreq.responseText;
+    }
+    // load from API of Googlesheet
     var get_data = function () {
         // from data/data.js
         console.log("INFO: Get data object...");
-        return global_tracker_data;
+        var tab1_url = "https://spreadsheets.google.com/feeds/cells/1D6c_rgfxr8vEQ6sj-EU9-NeetmNIEjTbv6aHK9BMA1Y/1/public/full?alt=json"
+        var tab2_url = "https://spreadsheets.google.com/feeds/cells/1D6c_rgfxr8vEQ6sj-EU9-NeetmNIEjTbv6aHK9BMA1Y/2/public/full?alt=json"
+        var tab3_url = "https://spreadsheets.google.com/feeds/cells/1D6c_rgfxr8vEQ6sj-EU9-NeetmNIEjTbv6aHK9BMA1Y/3/public/full?alt=json"
+
+        var tab1_json = JSON.parse(get_json(tab1_url));
+        var tab2_json = JSON.parse(get_json(tab2_url));
+        var tab3_json = JSON.parse(get_json(tab3_url));
+
+        var tab1_tsv = process_tab_to_tsv(tab1_json, 1, 16, ["A", "B"]);
+        var tab2_tsv = process_tab_to_tsv(tab2_json, 1, 100, ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]);
+        var tab3_tsv = process_tab_to_tsv(tab3_json, 1, 100, ["A", "B", "C", "D", "E", "F", "G", "H"]);
+
+        var merge = {
+            tab1: split_raw_cell_data(tab1_tsv),
+            tab2: split_raw_cell_data(tab2_tsv),
+            tab3: split_raw_cell_data(tab3_tsv)
+        }
+
+        merge = convert_format_sheetpaste_to_chartjson(merge);
+
+        // overwrite sheet data to shrink chart object
+        merge.tab1 = "";
+        merge.tab2 = "";
+        merge.tab3 = "";
+
+        document.getElementById("outputDataJSON").value = "var global_tracker_data = " + JSON.stringify(merge, null, 4) + ";\n";
+
+        return merge;
     };
+
+    var get_cached_data = function () {
+        return global_tracker_data;
+    }
 
     return {
         get_data: get_data,
         get_raw_data: get_raw_data,
+        get_cached_data: get_cached_data,
         format: format
     }
 })();
