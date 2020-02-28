@@ -33,6 +33,9 @@ var etDataAdapter = (function () {
             { "id": "e_ip", "metric": "In-person: 0k", "reach": 0 / 25000 * 100, "full": 100 }, //
             { "id": "e_vr", "metric": "Virtual: 0k", "reach": 0 / 25000 * 100, "full": 100 }, //
             { "id": "e_go", "metric": "Goal: 25k", "reach": 0 / 25000 * 100, "full": 100 }
+        ],
+        get_chart_timeline_data: [
+            //{ "date": "M/d/yyyy", "reach": 0 },
         ]
     };
 
@@ -50,16 +53,19 @@ var etDataAdapter = (function () {
         return tab;
     };
 
+    var error_log = "";
+    var errors = 0;
     var check_col_row_alignment = function (tab) {
         //console.log("tab1");
         var col_count = 0;
-        var errors = 0;
         for (row in tab) {
             if (col_count == 0) {
                 col_count = tab[row].length;
             }
             if (col_count != tab[row].length) {
-                console.log("WARN: row " + row + " col check fail");
+                var err = "- WARN: row " + row + " col check fail ";
+                error_log += "\n" + err;
+                console.log(err);
                 console.log(tab[row]);
                 errors++;
             }
@@ -67,11 +73,52 @@ var etDataAdapter = (function () {
         return errors;
     };
 
+    var scrub_timeline = function (timeline) {
+        var clean_timeline = [];
+        //console.log(timeline);
+        var clean = true;
+        var rgx = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+        for (var i = 0; i < timeline.length; i++) {
+            clean = true;
+            //console.log(timeline[i].reach);
+            let date = timeline[i]["date"];
+            let reach = timeline[i]["reach"];
+
+            if (isNaN(reach) ||
+                rgx.test(date) == false ||
+                date == "1/0/1900" ||
+                reach == 0
+            ) {
+                clean = false;
+            }
+
+            if (clean == true) {
+                clean_timeline.push(timeline[i]);
+            }
+        }
+
+        // sort
+        clean_timeline.sort(function (a, b) {
+            var dateA = new Date(a.date), dateB = new Date(b.date);
+            return dateA - dateB;
+        });
+        // accumulate
+        var accum_reach = 0;
+        for (var i = 0; i < clean_timeline.length; i++) {
+            accum_reach += clean_timeline[i].reach;
+            clean_timeline[i].reach = accum_reach;
+        }
+        //console.log(JSON.stringify(clean_timeline, null, 4));
+        return clean_timeline;
+    };
+
     var process_aligned_rows = function (merge) {
         var tab1 = merge.tab1;
         var tab2 = merge.tab2;
         var tab3 = merge.tab3;
 
+        merge.get_chart_timeline_data = [];
         // map excel cell data to our key object
         var cell_fxn_map = {
             "Engagement Activities": "stats_engagements",
@@ -128,9 +175,27 @@ var etDataAdapter = (function () {
         };
         for (let row = 0; row < tab2.length; row++) {
             //get_chart_engagements_participation_data
+            let valdate = tab2[row][0];
             let val = parseInt(tab2[row][7], 10) || 0; // we're converting NaNs to 0 here (and more)
             //console.log(val);
             accumulator[tab2[row][2]] += val;
+
+            let d = new Date(valdate);
+            let now = new Date();
+            let n = now.getFullYear();
+            //console.log(n);
+            if (d.getFullYear() <= n + 2 && !valdate.includes("Total")) {
+                //console.log(tab2[row]);
+                d = d.toLocaleDateString('en-US');
+                merge.get_chart_timeline_data.push({ "date": d, "reach": val });
+            }/* else {
+                let err = "- WARN: Date issue row " + row + " ";
+                error_log += "\n" + err;
+                console.log(err);
+                console.log(tab2[row]);
+                errors++;
+            }*/
+
         }
         //console.log(accumulator);
 
@@ -139,7 +204,7 @@ var etDataAdapter = (function () {
             let obj = merge[shell].find((o, i) => {
                 if (o.id === id_in) {
                     if (usePct == true) {
-                        merge[shell][i] = { id: id_in, metric: label + " " + (accumulator[label] / 1000).toFixed(1) + "K", reach: accumulator[label] / 25000 * 100, full: 100 };
+                        merge[shell][i] = { id: id_in, metric: label + " " + (accumulator[label] / 1000).toFixed(1) + "k", reach: accumulator[label] / 25000 * 100, full: 100 };
                     } else {
                         merge[shell][i] = { id: id_in, metric: label, reach: accumulator[label] };
                     }
@@ -182,6 +247,7 @@ var etDataAdapter = (function () {
 
         for (let row = 0; row < tab3.length; row++) {
             //get_chart_engagements_participation_data
+            let valdate = tab3[row][0];
             let val1 = parseInt(tab3[row][5], 10) || 0; // we're converting NaNs to 0 here (and more)
             let val2 = parseInt(tab3[row][6], 10) || 0; // we're converting NaNs to 0 here (and more)
             let val3 = parseInt(tab3[row][7], 10) || 0; // we're converting NaNs to 0 here (and more)
@@ -192,9 +258,27 @@ var etDataAdapter = (function () {
                 accumulator["In-person"] += val2;
                 accumulator["Virtual"] += val1;
                 accumulator["Total"] += val3;
+
+
+                let d = new Date(valdate);
+                let now = new Date();
+                let n = now.getFullYear();
+                //console.log(n);
+                if (d.getFullYear() <= n + 2 && !valdate.includes("Total")) {
+                    //console.log(tab2[row]);
+                    d = d.toLocaleDateString('en-US');
+                    merge.get_chart_timeline_data.push({ "date": d, "reach": val3 });
+                } /*else {
+                    let err = "- WARN: Date issue row " + row + " ";
+                    error_log += "\n" + err;
+                    console.log(err);
+                    console.log(tab3[row]);
+                    errors++;
+                }*/
+
             }
         }
-        //console.log(accumulator);
+        //console.log(merge.get_chart_timeline_data);
         //{ "id": "e_ip", "metric": "In-person", "reach": 0 },
         replace_data_shell(merge, "get_chart_events_participation_data", "e_ip", "In-person");
         replace_data_shell(merge, "get_chart_channels_thermo_data", "c_ip", "In-person");
@@ -214,6 +298,9 @@ var etDataAdapter = (function () {
         replace_data_shell(merge, "get_chart_channels_thermo_data", "c_te", "[bold]Total\nEngagement[\]");
         replace_data_shell(merge, "get_chart_channels_thermo_data", "c_to", "[bold]Total\nOutreach[\]");
 
+        //add timeline data
+
+        merge.get_chart_timeline_data = scrub_timeline(merge.get_chart_timeline_data);
 
         return merge;
     };
@@ -222,6 +309,7 @@ var etDataAdapter = (function () {
         //merge = adapter_data_shell;
         Object.assign(merge, adapter_data_shell);
 
+        error_log = "";
         //tab1
         var t1e = check_col_row_alignment(merge.tab1);
         var t2e = check_col_row_alignment(merge.tab2);
@@ -229,10 +317,17 @@ var etDataAdapter = (function () {
         var totes = t1e + t2e + t3e;
 
 
-        if (totes == 0) {
+        if (totes == 0 && errors == 0) {
             console.log("INFO: No errors detected");
+            document.getElementById("format_errors_container").style.display = 'none';
+            error_log = "";
+            document.getElementById("format_errors_log").innerText = "";
             merge = process_aligned_rows(merge);
         } else {
+            document.getElementById("format_errors_container").style.display = 'block';
+            document.getElementById("format_errors").innerText = totes;
+            document.getElementById("format_errors_log").innerText = error_log;
+
             console.log("INFO: tab1 " + t1e + " Errors");
             console.log("INFO: tab2 " + t2e + " Errors");
             console.log("INFO: tab3 " + t3e + " Errors");
@@ -246,7 +341,7 @@ var etDataAdapter = (function () {
 
     var format = function () {
         console.log("INFO: Format data object...");
-        return JSON.stringify(get_raw_data());
+        return "var global_tracker_data = " + JSON.stringify(get_raw_data(), null, 4) + ";\n";
     };
 
     var get_raw_data = function () {

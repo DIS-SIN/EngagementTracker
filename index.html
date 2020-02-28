@@ -34,8 +34,29 @@
             height: 20em;
         }
 
+        #chart_timeline {
+            width: 100%;
+            height: 20em;
+        }
+
+        #format_data_container {
+            display: none;
+        }
+
+        #format_errors_container {
+            display: none;
+        }
+
         .banner-metric {
             width: 2.5em;
+        }
+
+        .display-4 {
+            font-size: 2.5rem;
+        }
+
+        .lead {
+            font-size: 1.2rem;
         }
     </style>
     <title>IPSB Engagement Tracker</title>
@@ -47,7 +68,7 @@
             <div class="col-lg-10 p-1">
                 <h1 class="display-4">IPSB Engagement Tracker</h1>
                 <p class="lead">
-                    Tracking engagement activities (kiosks, workshops, speaking engagements) and events by the CSPS
+                    Tracking engagement activities and events by the CSPS
                     Digital Academy and unique views/listens from Busrides and Innovate on Demand.
                 </p>
             </div>
@@ -92,22 +113,28 @@
                 <div id="chart_events_participation" class="p-3"></div>
             </div>
             <div class="col-lg-4 p-2">
-                <p class="h5">Engagement Activities</p>
-                <div id="chart_engagements_participation" class="p-3"></div>
-            </div>
-            <div class="col-lg-4 p-2">
                 <p class="h5">25k Engagement Goal Progress</p>
                 <div id="chart_engagement_thermo" class="p-3"></div>
             </div>
+            <div class="col-lg-4 p-2">
+                <p class="h5">Engagement Activities</p>
+                <div id="chart_engagements_participation" class="p-3"></div>
+            </div>
+
         </div>
         <div class="row">
-            <div class="col-sm p-2">
+            <div class="col-lg-8 p-2">
                 <p class="h5">Outreach Summary</p>
                 <div id="chart_channels_thermo" class="p-3"></div>
             </div>
+
+            <div class="col-lg-4 p-2">
+                <p class="h5">Engagement Timeline</p>
+                <div id="chart_timeline" class="p-3"></div>
+            </div>
         </div>
     </div>
-    <div class="container-fluid">
+    <div class="container-fluid" id="format_data_container">
         <div class="row bg-dark text-white p-4">
             <p class="h4">Spreadsheet2Dashboard Formatter</p>
         </div>
@@ -147,7 +174,13 @@
                 </button>
             </div>
             <div class="col-md p-2">
-                <p class="h6">Formatted JSON</p>
+                <p class="h6">
+                    Formatted JSON
+                    <span id="format_errors_container" class="btn btn-danger">Errors
+                        <span id="format_errors" class="badge badge-light">0</span>
+                    </span>
+                    <span id="format_errors_log"></span>
+                </p>
                 <form>
                     <div class="form-group">
                         <label for="outputDataJSON">Copy this, update the data file!</label>
@@ -155,6 +188,13 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row bg-dark text-white p-4">
+            <button id="toggle_format_data" type="button" class="btn btn-light">
+                Data-Formatter
+            </button>
         </div>
     </div>
 

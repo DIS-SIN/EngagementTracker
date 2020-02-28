@@ -9,7 +9,7 @@ var etDashboard = (function () {
     };
 
     var k_format = function (val) {
-        return (parseInt(val.split(",").join(""), 10) / 1000).toFixed(1) + "K";
+        return (parseInt(val.split(",").join(""), 10) / 1000).toFixed(1) + "k";
     };
 
     var build_summary_header = function () {
@@ -70,7 +70,7 @@ var etDashboard = (function () {
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.adapter.add("text", function (text, target) {
-            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "K" + "[/]";
+            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "k" + "[/]";
         })
 
         chart.legend = new am4charts.Legend();
@@ -126,7 +126,7 @@ var etDashboard = (function () {
         label.horizontalCenter = "middle";
         label.verticalCenter = "middle";
         label.adapter.add("text", function (text, target) {
-            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "K" + "[/]";
+            return "[bold font-size:30px]" + (pieSeries.dataItem.values.value.sum / 1000).toFixed(1) + "k" + "[/]";
         })
 
         chart.legend = new am4charts.Legend();
@@ -171,6 +171,10 @@ var etDashboard = (function () {
         var chart = am4core.create("chart_channels_thermo", am4charts.XYChart);
         g_chart_channels_thermo = chart;
 
+
+        // Set number format
+        chart.numberFormatter.numberFormat = "#.a";
+
         chart.data = get_chart_channels_thermo_data();
 
         chart.padding(40, 40, 40, 40);
@@ -200,7 +204,7 @@ var etDashboard = (function () {
         var labelBullet = series.bullets.push(new am4charts.LabelBullet());
         labelBullet.label.verticalCenter = "bottom";
         labelBullet.label.dy = -10;
-        labelBullet.label.text = "{values.valueY.workingValue.formatNumber('#.')}";
+        labelBullet.label.text = "{values.valueY.workingValue.formatNumber('#.0a')}";
 
         chart.zoomOutButton.disabled = true;
 
@@ -295,12 +299,134 @@ var etDashboard = (function () {
 
     };
 
+    /*
+    [{
+        "date": "6/20/1994",
+        "reach": 1587
+    }, {
+        "date": "6/20/1995",
+        "reach": 8567
+    }];
+    */
+    var get_chart_timeline_data = function () {
+        return chart_data.get_chart_timeline_data;
+    };
+    var g_chart_timeline = null;
+    var build_chart_timeline = function () {
+
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        var chart = am4core.create("chart_timeline", am4charts.XYChart);
+        g_chart_timeline = chart;
+
+        // Set number format
+        chart.numberFormatter.numberFormat = "#.a";
+
+        chart.data = get_chart_timeline_data();
+        chart.dateFormatter.inputDateFormat = "M/d/yyyy";
+        var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+        dateAxis.renderer.minGridDistance = 60;
+        dateAxis.startLocation = 0.5;
+        dateAxis.endLocation = 0.5;
+        dateAxis.baseInterval = {
+            timeUnit: "day",
+            count: 1
+        }
+
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.tooltip.disabled = true;
+
+        var series = chart.series.push(new am4charts.LineSeries());
+        series.dataFields.dateX = "date";
+        series.name = "reach";
+        series.dataFields.valueY = "reach";
+        series.tooltipHTML = "<span style='font-size:14px; color:#000000;'><b>{valueY.value}</b></span>";
+        series.tooltipText = "[#000]{valueY.value}[/]";
+        series.tooltip.background.fill = am4core.color("#FFF");
+        series.tooltip.getStrokeFromObject = true;
+        series.tooltip.background.strokeWidth = 3;
+        series.tooltip.getFillFromObject = false;
+        series.fillOpacity = 0.6;
+        series.strokeWidth = 2;
+        series.stacked = true;
+        /*
+        var series2 = chart.series.push(new am4charts.LineSeries());
+        series2.name = "motorcycles";
+        series2.dataFields.dateX = "year";
+        series2.dataFields.valueY = "motorcycles";
+        series2.tooltipHTML = "<img src='https://www.amcharts.com/lib/3/images/motorcycle.png' style='vertical-align:bottom; margin-right: 10px; width:28px; height:21px;'><span style='font-size:14px; color:#000000;'><b>{valueY.value}</b></span>";
+        series2.tooltipText = "[#000]{valueY.value}[/]";
+        series2.tooltip.background.fill = am4core.color("#FFF");
+        series2.tooltip.getFillFromObject = false;
+        series2.tooltip.getStrokeFromObject = true;
+        series2.tooltip.background.strokeWidth = 3;
+        series2.sequencedInterpolation = true;
+        series2.fillOpacity = 0.6;
+        series2.stacked = true;
+        series2.strokeWidth = 2;
+
+        var series3 = chart.series.push(new am4charts.LineSeries());
+        series3.name = "bicycles";
+        series3.dataFields.dateX = "year";
+        series3.dataFields.valueY = "bicycles";
+        series3.tooltipHTML = "<img src='https://www.amcharts.com/lib/3/images/bicycle.png' style='vertical-align:bottom; margin-right: 10px; width:28px; height:21px;'><span style='font-size:14px; color:#000000;'><b>{valueY.value}</b></span>";
+        series3.tooltipText = "[#000]{valueY.value}[/]";
+        series3.tooltip.background.fill = am4core.color("#FFF");
+        series3.tooltip.getFillFromObject = false;
+        series3.tooltip.getStrokeFromObject = true;
+        series3.tooltip.background.strokeWidth = 3;
+        series3.sequencedInterpolation = true;
+        series3.fillOpacity = 0.6;
+        series3.defaultState.transitionDuration = 1000;
+        series3.stacked = true;
+        series3.strokeWidth = 2;
+        */
+        chart.cursor = new am4charts.XYCursor();
+        chart.cursor.xAxis = dateAxis;
+        chart.scrollbarX = new am4core.Scrollbar();
+
+        // Add a legend
+        chart.legend = new am4charts.Legend();
+        chart.legend.position = "bottom";
+
+        // axis ranges
+        /*
+        var range = dateAxis.axisRanges.create();
+        range.date = new Date(2001, 0, 1);
+        range.endDate = new Date(2003, 0, 1);
+        range.axisFill.fill = chart.colors.getIndex(7);
+        range.axisFill.fillOpacity = 0.2;
+
+        range.label.text = "Fines for speeding increased";
+        range.label.inside = true;
+        range.label.rotation = 90;
+        range.label.horizontalCenter = "right";
+        range.label.verticalCenter = "bottom";
+
+        var range2 = dateAxis.axisRanges.create();
+        range2.date = new Date(2007, 0, 1);
+        range2.grid.stroke = chart.colors.getIndex(7);
+        range2.grid.strokeOpacity = 0.6;
+        range2.grid.strokeDasharray = "5,2";
+
+
+        range2.label.text = "Motorcycle fee introduced";
+        range2.label.inside = true;
+        range2.label.rotation = 90;
+        range2.label.horizontalCenter = "right";
+        range2.label.verticalCenter = "bottom";
+        */
+    };
+
     var init_charts = function () {
         build_summary_header();
         build_chart_events_participation();
         build_chart_engagements_participation();
         build_chart_engagement_thermo();
         build_chart_channels_thermo();
+        build_chart_timeline();
     };
     var refresh_charts = function () {
         console.log("INFO: Refresh Data...");
@@ -317,6 +443,8 @@ var etDashboard = (function () {
         g_chart_channels_thermo.data = get_chart_channels_thermo_data();
         g_chart_engagements_participation.data = get_chart_engagements_participation_data();
         g_chart_events_participation.data = get_chart_events_participation_data();
+
+        g_chart_timeline.data = get_chart_timeline_data();
 
         /*
         //let pieSeries = g_chart_engagements_participation.series;
@@ -355,8 +483,20 @@ document.addEventListener('click', function (event) {
     etDashboard.refresh();
 }, false);
 
+document.addEventListener('click', function (event) {
+    // If the clicked element doesn't have the right selector, bail
+    if (!event.target.matches('#toggle_format_data')) return;
+    // Don't follow the link
+    event.preventDefault();
+
+    let el = document.getElementById("format_data_container");
+    el.style.display == 'block' ?
+        el.style.display = 'none' :
+        el.style.display = 'block';
+}, false);
+
 // autorefresh
 setInterval(function () {
     console.log("INFO: Refreshing...");
     window.location.reload()
-}, 600000); // update every 10 mins
+}, 60000 * 10); // update every 10 mins
